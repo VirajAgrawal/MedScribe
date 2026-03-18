@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedScribe AI — Healthcare Content Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --bg:        #f4f2ee;
+      --surface:   #ffffff;
+      --border:    #e2ddd6;
+      --accent:    #1a6b5c;
+      --accent-lt: #e6f4f1;
+      --accent-dk: #0e4a3f;
+      --warn:      #c0392b;
+      --text-1:    #1a1a1a;
+      --text-2:    #555550;
+      --text-3:    #8a8880;
+      --radius:    10px;
+      --shadow:    0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-icon svg { width: 18px; height: 18px; fill: white; }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--text-1);
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .header-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--accent-lt);
+      color: var(--accent-dk);
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 0 2rem;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      line-height: 1.2;
+      color: var(--text-1);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      color: var(--text-2);
+      font-size: 0.95rem;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Pipeline Diagram ── */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 1.8rem 0;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .pipe-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-2);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pipe-step .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .pipe-arrow {
+      color: var(--text-3);
+      font-size: 0.9rem;
+      padding: 0 4px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card + .card { margin-top: 1.2rem; }
+
+    .card-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.8rem;
+    }
+
+    /* ── Doc Type Selector ── */
+    .doc-types {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+    }
+
+    @media (min-width: 640px) {
+      .doc-types { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .doc-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.6rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .doc-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-lt);
+    }
+
+    .doc-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .doc-btn .type-icon { font-size: 1.2rem; margin-bottom: 3px; }
+    .doc-btn .type-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: block;
+    }
+
+    /* ── Textarea ── */
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-1);
+      background: var(--bg);
+      resize: vertical;
+      min-height: 130px;
+      transition: border-color 0.15s;
+      outline: none;
+      line-height: 1.6;
+    }
+
+    textarea:focus { border-color: var(--accent); background: white; }
+    textarea::placeholder { color: var(--text-3); }
+
+    /* ── Generate Button ── */
+    .btn-generate {
+      margin-top: 0.8rem;
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-generate:hover { background: var(--accent-dk); }
+    .btn-generate:disabled { background: var(--text-3); cursor: not-allowed; }
+
+    /* ── Loading ── */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Output Area ── */
+    .output-section { display: none; }
+    .output-section.visible { display: block; }
+
+    .output-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .meta-tag {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-type { background: var(--accent-lt); color: var(--accent-dk); }
+    .tag-time { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+
+    .copy-btn {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: none;
+      border: 1.5px solid var(--accent);
+      border-radius: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover { background: var(--accent); color: white; }
+
+    /* ── Rendered Markdown Output ── */
+    .output-content {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem 1.4rem;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--text-1);
+      white-space: pre-wrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .output-content h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      color: var(--accent-dk);
+      margin: 1rem 0 0.3rem;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Vector Context Panel ── */
+    .context-panel {
+      margin-top: 0.8rem;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .context-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.5rem;
+    }
+
+    .context-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      font-weight: 500;
+    }
+
+    .stat-pill strong { color: var(--accent); }
+
+    /* ── Error ── */
+    .error-box {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      color: var(--warn);
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .error-box.visible { display: block; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: var(--text-3);
+      font-size: 0.78rem;
+      margin-top: 3rem;
+      padding-bottom: 2rem;
+    }
+
+    footer span { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a1 1 0 011 1v2h2a1 1 0 010 2h-2v2a1 1 0 01-2 0v-2H9a1 1 0 010-2h2V7a1 1 0 011-1z"/></svg>
+    </div>
+    <span class="logo-text">Med<span>Scribe</span> AI</span>
+  </div>
+  <span class="header-badge">Healthcare GenAI Tool</span>
+</header>
+
+<!-- Main -->
+<main class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Professional Healthcare<br/>Documents, <em>Instantly</em></h1>
+    <p>Powered by Prompt Engineering + Vector DB memory + Gemini LLM. Input a brief topic and get a structured, clinical-grade document.</p>
+  </div>
+
+  <!-- Pipeline Visualization -->
+  <div class="pipeline">
+    <div class="pipe-step"><span class="dot"></span> User Input</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><span class="dot"></span> Vector DB Retrieval</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><span class="dot"></span> Prompt Engineering</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><span class="dot"></span> Gemini LLM</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><span class="dot"></span> Output + Store</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-pill">Vector DB Records: <strong id="stat-count">0</strong></div>
+    <div class="stat-pill">Model: <strong>gemini-1.5-flash</strong></div>
+    <div class="stat-pill">RAG: <strong>Enabled</strong></div>
+  </div>
+
+  <!-- Step 1: Document Type -->
+  <div class="card">
+    <div class="card-label">Step 1 — Choose Document Type</div>
+    <div class="doc-types">
+      <button class="doc-btn active" data-type="patient_summary" onclick="selectType(this)">
+        <div class="type-icon">📋</div>
+        <span class="type-name">Patient Summary</span>
+      </button>
+      <button class="doc-btn" data-type="discharge_note" onclick="selectType(this)">
+        <div class="type-icon">🏥</div>
+        <span class="type-name">Discharge Note</span>
+      </button>
+      <button class="doc-btn" data-type="clinical_referral" onclick="selectType(this)">
+        <div class="type-icon">📨</div>
+        <span class="type-name">Clinical Referral</span>
+      </button>
+      <button class="doc-btn" data-type="medical_report" onclick="selectType(this)">
+        <div class="type-icon">🔬</div>
+        <span class="type-name">Medical Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Input -->
+  <div class="card">
+    <div class="card-label">Step 2 — Describe the Case / Topic</div>
+    <textarea id="user-input" placeholder="Example: 65-year-old male, Type 2 diabetes, presenting with elevated HbA1c (9.2%), mild hypertension, and recent episodes of dizziness. Currently on Metformin 500mg. Needs review and updated care plan."></textarea>
+    <button class="btn-generate" id="generate-btn" onclick="generate()">
+      <span id="btn-text">Generate Document</span>
+      <div id="btn-spinner" class="spinner" style="display:none"></div>
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="error-box"></div>
+
+  <!-- Output -->
+  <div class="output-section" id="output-section">
+    <div class="card">
+      <div class="output-meta">
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <span class="meta-tag tag-type" id="out-type">Patient Summary</span>
+          <span class="meta-tag tag-time" id="out-time">—</span>
+        </div>
+        <button class="copy-btn" onclick="copyOutput()">Copy</button>
+      </div>
+      <div class="output-content" id="output-content"></div>
+
+      <!-- Vector DB Context used -->
+      <div class="context-panel">
+        <div class="context-label">🗄 Vector DB Context Retrieved (RAG)</div>
+        <div class="context-text" id="vector-context">—</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Built with <span>Python · Flask · ChromaDB · Gemini API</span> — Academic Project
+</footer>
+
+<script>
+  // ── State ──
+  let selectedType = "patient_summary";
+  const typeLabels = {
+    patient_summary: "Patient Summary",
+    discharge_note: "Discharge Note",
+    clinical_referral: "Clinical Referral",
+    medical_report: "Medical Report"
+  };
+
+  // ── Select Doc Type ──
+  function selectType(btn) {
+    document.querySelectorAll(".doc-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedType = btn.dataset.type;
+  }
+
+  // ── Render Basic Markdown ──
+  function renderMarkdown(text) {
+    return text
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>');
+  }
+
+  // ── Generate ──
+  async function generate() {
+    const input = document.getElementById("user-input").value.trim();
+    const errorBox = document.getElementById("error-box");
+
+    errorBox.classList.remove("visible");
+    document.getElementById("output-section").classList.remove("visible");
+
+    if (!input) {
+      errorBox.textContent = "Please enter a case description or topic.";
+      errorBox.classList.add("visible");
+      return;
+    }
+
+    // Loading state
+    document.getElementById("generate-btn").disabled = true;
+    document.getElementById("btn-text").textContent = "Generating…";
+    document.getElementById("btn-spinner").style.display = "block";
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input, doc_type: selectedType })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        errorBox.textContent = "Error: " + data.error;
+        errorBox.classList.add("visible");
+        return;
+      }
+
+      // Populate output
+      document.getElementById("out-type").textContent = typeLabels[data.doc_type];
+      document.getElementById("out-time").textContent = data.timestamp;
+      document.getElementById("output-content").innerHTML = renderMarkdown(data.generated_content);
+      document.getElementById("vector-context").textContent = data.similar_context_used;
+      document.getElementById("output-section").classList.add("visible");
+
+      // Refresh stats
+      fetchStats();
+    } catch (err) {
+      errorBox.textContent = "Network error. Make sure the Flask server is running on port 5000.";
+      errorBox.classList.add("visible");
+    } finally {
+      document.getElementById("generate-btn").disabled = false;
+      document.getElementById("btn-text").textContent = "Generate Document";
+      document.getElementById("btn-spinner").style.display = "none";
+    }
+  }
+
+  // ── Copy Output ──
+  function copyOutput() {
+    const text = document.getElementById("output-content").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector(".copy-btn");
+      btn.textContent = "Copied!";
+      setTimeout(() => btn.textContent = "Copy", 1800);
+    });
+  }
+
+  // ── Fetch Stats ──
+  async function fetchStats() {
+    try {
+      const res = await fetch("/api/stats");
+      const data = await res.json();
+      if (data.success) document.getElementById("stat-count").textContent = data.total_stored;
+    } catch {}
+  }
+
+  // ── Enter to generate ──
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key === "Enter") generate();
+  });
+
+  // Init
+  fetchStats();
+</script>
+</body>
+</html>
