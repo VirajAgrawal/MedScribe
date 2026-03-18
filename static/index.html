@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedScribe AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f7f6f3;
+      --white: #ffffff;
+      --border: #e4e1db;
+      --accent: #2d6a4f;
+      --accent-lt: #eaf3ee;
+      --text: #1c1c1a;
+      --muted: #6b6b67;
+      --error: #b91c1c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand { font-family: 'Lora', serif; font-size: 1.15rem; color: var(--text); }
+    .brand em { font-style: italic; color: var(--accent); }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--accent-lt);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle { font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem; }
+
+    .toggle-wrap {
+      display: flex;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 1.75rem;
+      gap: 4px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 0.55rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-btn.active { background: var(--accent); color: white; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    label span { color: var(--error); margin-left: 2px; }
+
+    input, select, textarea {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.6rem 0.85rem;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+    select { cursor: pointer; }
+
+    .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    .error {
+      font-size: 0.85rem;
+      color: var(--error);
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 7px;
+      padding: 0.7rem 1rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+    .error.show { display: block; }
+
+    .output { display: none; }
+    .output.show { display: block; }
+
+    .out-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .out-title { font-family: 'Lora', serif; font-size: 1rem; font-weight: 600; }
+    .out-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+    .copy-btn {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-lt);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+    }
+
+    .out-body {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.4rem;
+      font-size: 0.875rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .out-body h2 {
+      font-family: 'Lora', serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1.1rem 0 0.3rem;
+      padding-bottom: 3px;
+      border-bottom: 1px solid var(--border);
+    }
+    .out-body h2:first-child { margin-top: 0; }
+
+    footer { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 3rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Med<em>Scribe</em> AI</div>
+  <span class="badge">Healthcare GenAI</span>
+</header>
+
+<div class="page">
+
+  <h2>Generate Clinical Document</h2>
+  <p class="subtitle">Fill in the patient details below to generate a professional healthcare document.</p>
+
+  <div class="toggle-wrap">
+    <button class="toggle-btn active" data-type="patient_summary" onclick="setType(this)">Patient Summary</button>
+    <button class="toggle-btn" data-type="medical_report" onclick="setType(this)">Medical Report</button>
+  </div>
+
+  <div class="form-grid">
+
+    <div class="field">
+      <label>Patient Name <span>*</span></label>
+      <input type="text" id="name" placeholder="e.g. John Doe"/>
+    </div>
+
+    <div class="field">
+      <label>Age <span>*</span></label>
+      <input type="number" id="age" placeholder="e.g. 54" min="0" max="120"/>
+    </div>
+
+    <div class="field">
+      <label>Gender</label>
+      <select id="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Current Medications</label>
+      <input type="text" id="medications" placeholder="e.g. Metformin 500mg"/>
+    </div>
+
+    <div class="field full">
+      <label>Chief Complaint <span>*</span></label>
+      <input type="text" id="complaint" placeholder="e.g. Elevated HbA1c, recurring dizziness, mild hypertension"/>
+    </div>
+
+    <div class="field full">
+      <label>Medical History</label>
+      <textarea id="history" placeholder="e.g. Type 2 diabetes (diagnosed 2018), hypertension, no prior surgeries"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Additional Notes</label>
+      <textarea id="notes" placeholder="Any other relevant information..."></textarea>
+    </div>
+
+  </div>
+
+  <button class="btn" id="gen-btn" onclick="generate()">
+    <span id="btn-label">Generate Document</span>
+    <div class="spinner" id="spinner"></div>
+  </button>
+
+  <div class="error" id="error-box"></div>
+
+  <hr class="divider"/>
+
+  <div class="output" id="output">
+    <div class="out-header">
+      <div>
+        <div class="out-title" id="out-title">Patient Summary</div>
+        <div class="out-meta" id="out-meta">—</div>
+      </div>
+      <button class="copy-btn" onclick="copyOutput()">Copy</button>
+    </div>
+    <div class="out-body" id="out-body"></div>
+  </div>
+
+</div>
+
+<footer>MedScribe AI · Python · Flask · ChromaDB · Gemini API</footer>
+
+<script>
+  let docType = "patient_summary";
+
+  function setType(btn) {
+    document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    docType = btn.dataset.type;
+  }
+
+  function renderMd(text) {
+    return text
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  async function generate() {
+    const fields = {
+      name:        document.getElementById("name").value.trim(),
+      age:         document.getElementById("age").value.trim(),
+      gender:      document.getElementById("gender").value,
+      complaint:   document.getElementById("complaint").value.trim(),
+      history:     document.getElementById("history").value.trim(),
+      medications: document.getElementById("medications").value.trim() || "N/A",
+      notes:       document.getElementById("notes").value.trim() || "None",
+      doc_type:    docType
+    };
+
+    const err = document.getElementById("error-box");
+    err.classList.remove("show");
+    document.getElementById("output").classList.remove("show");
+
+    if (!fields.name || !fields.age || !fields.complaint) {
+      err.textContent = "Please fill in Name, Age, and Chief Complaint.";
+      err.classList.add("show");
+      return;
+    }
+
+    const btn = document.getElementById("gen-btn");
+    btn.disabled = true;
+    document.getElementById("btn-label").textContent = "Generating…";
+    document.getElementById("spinner").style.display = "block";
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields)
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        err.textContent = data.error;
+        err.classList.add("show");
+        return;
+      }
+
+      const labels = { patient_summary: "Patient Summary", medical_report: "Medical Report" };
+      document.getElementById("out-title").textContent = labels[docType];
+      document.getElementById("out-meta").textContent = fields.name + " · " + data.timestamp;
+      document.getElementById("out-body").innerHTML = renderMd(data.content);
+      document.getElementById("output").classList.add("show");
+      document.getElementById("output").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    } catch {
+      err.textContent = "Could not connect. Make sure Flask is running on port 5000.";
+      err.classList.add("show");
+    } finally {
+      btn.disabled = false;
+      document.getElementById("btn-label").textContent = "Generate Document";
+      document.getElementById("spinner").style.display = "none";
+    }
+  }
+
+  function copyOutput() {
+    const text = document.getElementById("out-body").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const b = document.querySelector(".copy-btn");
+      b.textContent = "Copied!";
+      setTimeout(() => b.textContent = "Copy", 1800);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Healthcare GenAI Tool — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+flask==3.0.0
+google-generativeai==0.7.2
+chromadb==0.4.24
