@@ -64,8 +64,6 @@ http://localhost:5000
 
 ## Document Types Supported
 - **Patient Summary** — SOAP-style structured summary
-- **Discharge Note** — Hospital discharge documentation
-- **Clinical Referral** — Specialist referral letter
 - **Medical Report** — Formal diagnostic report
 
 ---

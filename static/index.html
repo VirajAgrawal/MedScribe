@@ -16,15 +16,8 @@
       --muted: #6b6b67;
       --error: #b91c1c;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     header {
       background: var(--white);
@@ -35,180 +28,145 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    .brand { font-family: 'Lora', serif; font-size: 1.15rem; color: var(--text); }
+    .brand { font-family: 'Lora', serif; font-size: 1.15rem; }
     .brand em { font-style: italic; color: var(--accent); }
-
     .badge {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent);
-      background: var(--accent-lt);
-      padding: 3px 10px;
-      border-radius: 20px;
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--accent); background: var(--accent-lt);
+      padding: 3px 10px; border-radius: 20px;
     }
 
-    .page {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 2.5rem 1.25rem 4rem;
-    }
+    .page { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
 
-    h2 {
-      font-family: 'Lora', serif;
-      font-size: 1.55rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-      letter-spacing: -0.02em;
-    }
-
+    h2 { font-family: 'Lora', serif; font-size: 1.55rem; font-weight: 600; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
     .subtitle { font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem; }
 
     .toggle-wrap {
-      display: flex;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px;
-      margin-bottom: 1.75rem;
-      gap: 4px;
+      display: flex; background: var(--white); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px; margin-bottom: 1.75rem; gap: 4px;
     }
-
     .toggle-btn {
-      flex: 1;
-      padding: 0.55rem 1rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border: none;
-      border-radius: 6px;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.15s;
+      flex: 1; padding: 0.55rem 1rem; font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; font-weight: 500; border: none; border-radius: 6px;
+      background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s;
     }
-
     .toggle-btn.active { background: var(--accent); color: white; }
 
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
     .field { display: flex; flex-direction: column; gap: 5px; }
     .field.full { grid-column: 1 / -1; }
 
-    label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
+    label { font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.03em; text-transform: uppercase; }
     label span { color: var(--error); margin-left: 2px; }
 
     input, select, textarea {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      color: var(--text);
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 0.6rem 0.85rem;
-      outline: none;
-      transition: border-color 0.15s;
-      width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text);
+      background: var(--white); border: 1px solid var(--border); border-radius: 7px;
+      padding: 0.6rem 0.85rem; outline: none; transition: border-color 0.15s; width: 100%;
     }
-
     input:focus, select:focus, textarea:focus { border-color: var(--accent); }
     textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
-    select { cursor: pointer; }
 
     .btn {
-      margin-top: 1.5rem;
-      width: 100%;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 7px;
-      padding: 0.8rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: opacity 0.15s;
+      margin-top: 1.5rem; width: 100%; background: var(--accent); color: white;
+      border: none; border-radius: 7px; padding: 0.8rem; font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.15s;
     }
     .btn:hover { opacity: 0.88; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .spinner {
-      width: 15px; height: 15px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.65s linear infinite;
-      display: none;
+      width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.65s linear infinite; display: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
     .error {
-      font-size: 0.85rem;
-      color: var(--error);
-      background: #fef2f2;
-      border: 1px solid #fca5a5;
-      border-radius: 7px;
-      padding: 0.7rem 1rem;
-      margin-top: 0.75rem;
-      display: none;
+      font-size: 0.85rem; color: var(--error); background: #fef2f2;
+      border: 1px solid #fca5a5; border-radius: 7px;
+      padding: 0.7rem 1rem; margin-top: 0.75rem; display: none;
     }
     .error.show { display: block; }
+
+    /* RAG Status Badge */
+    .rag-status {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 1rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 7px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid;
+    }
+    .rag-status.show { display: flex; }
+    .rag-status.hit {
+      background: var(--accent-lt);
+      border-color: #a7d4be;
+      color: #1a4d38;
+    }
+    .rag-status.miss {
+      background: #fafaf8;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+    .rag-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .rag-status.hit .rag-dot { background: var(--accent); }
+    .rag-status.miss .rag-dot { background: var(--muted); }
+
+    /* RAG context expandable */
+    .rag-toggle {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+    .rag-detail {
+      display: none;
+      margin-top: 0.5rem;
+      background: #f0f7f4;
+      border: 1px solid #c5e0d4;
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.75rem;
+      color: #2a5a42;
+      line-height: 1.6;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .rag-detail.show { display: block; }
 
     .output { display: none; }
     .output.show { display: block; }
 
     .out-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.85rem;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;
     }
-
     .out-title { font-family: 'Lora', serif; font-size: 1rem; font-weight: 600; }
     .out-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
 
     .copy-btn {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-lt);
-      border: none;
-      border-radius: 6px;
-      padding: 5px 14px;
-      cursor: pointer;
+      font-size: 0.78rem; font-weight: 600; color: var(--accent);
+      background: var(--accent-lt); border: none; border-radius: 6px;
+      padding: 5px 14px; cursor: pointer;
     }
 
     .out-body {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem 1.4rem;
-      font-size: 0.875rem;
-      line-height: 1.8;
-      color: var(--text);
+      background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1.25rem 1.4rem; font-size: 0.875rem; line-height: 1.8; color: var(--text);
     }
-
     .out-body h2 {
-      font-family: 'Lora', serif;
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: var(--accent);
-      margin: 1.1rem 0 0.3rem;
-      padding-bottom: 3px;
+      font-family: 'Lora', serif; font-size: 0.92rem; font-weight: 600;
+      color: var(--accent); margin: 1.1rem 0 0.3rem; padding-bottom: 3px;
       border-bottom: 1px solid var(--border);
     }
     .out-body h2:first-child { margin-top: 0; }
@@ -220,7 +178,7 @@
 
 <header>
   <div class="brand">Med<em>Scribe</em> AI</div>
-  <span class="badge">Healthcare GenAI</span>
+  <span class="badge">Clinical Data Assistant</span>
 </header>
 
 <div class="page">
@@ -234,17 +192,14 @@
   </div>
 
   <div class="form-grid">
-
     <div class="field">
       <label>Patient Name <span>*</span></label>
-      <input type="text" id="name" placeholder="e.g. John Doe"/>
+      <input type="text" id="name" placeholder="e.g. Viraj Agrawal"/>
     </div>
-
     <div class="field">
       <label>Age <span>*</span></label>
-      <input type="number" id="age" placeholder="e.g. 54" min="0" max="120"/>
+      <input type="number" id="age" placeholder="e.g. 25" min="0" max="120"/>
     </div>
-
     <div class="field">
       <label>Gender</label>
       <select id="gender">
@@ -253,27 +208,22 @@
         <option value="Other">Other</option>
       </select>
     </div>
-
     <div class="field">
       <label>Current Medications</label>
-      <input type="text" id="medications" placeholder="e.g. Metformin 500mg"/>
+      <input type="text" id="medications" placeholder="e.g. Paracetamol 500mg"/>
     </div>
-
     <div class="field full">
       <label>Chief Complaint <span>*</span></label>
-      <input type="text" id="complaint" placeholder="e.g. Elevated HbA1c, recurring dizziness, mild hypertension"/>
+      <input type="text" id="complaint" placeholder="e.g. Recurring dizziness, mild hypertension"/>
     </div>
-
     <div class="field full">
       <label>Medical History</label>
       <textarea id="history" placeholder="e.g. Type 2 diabetes (diagnosed 2018), hypertension, no prior surgeries"></textarea>
     </div>
-
     <div class="field full">
       <label>Additional Notes</label>
       <textarea id="notes" placeholder="Any other relevant information..."></textarea>
     </div>
-
   </div>
 
   <button class="btn" id="gen-btn" onclick="generate()">
@@ -282,6 +232,14 @@
   </button>
 
   <div class="error" id="error-box"></div>
+
+  <!-- RAG Status (shown after generation) -->
+  <div class="rag-status" id="rag-status">
+    <div class="rag-dot"></div>
+    <span id="rag-msg"></span>
+    <span class="rag-toggle" id="rag-toggle" onclick="toggleRagDetail()" style="display:none">View context ▾</span>
+  </div>
+  <div class="rag-detail" id="rag-detail"></div>
 
   <hr class="divider"/>
 
@@ -315,6 +273,13 @@
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   }
 
+  function toggleRagDetail() {
+    const d = document.getElementById("rag-detail");
+    const t = document.getElementById("rag-toggle");
+    d.classList.toggle("show");
+    t.textContent = d.classList.contains("show") ? "Hide context ▴" : "View context ▾";
+  }
+
   async function generate() {
     const fields = {
       name:        document.getElementById("name").value.trim(),
@@ -328,7 +293,9 @@
     };
 
     const err = document.getElementById("error-box");
+    const ragStatus = document.getElementById("rag-status");
     err.classList.remove("show");
+    ragStatus.classList.remove("show", "hit", "miss");
     document.getElementById("output").classList.remove("show");
 
     if (!fields.name || !fields.age || !fields.complaint) {
@@ -356,12 +323,31 @@
         return;
       }
 
+      // Show RAG status
+      const ragMsg = document.getElementById("rag-msg");
+      const ragToggle = document.getElementById("rag-toggle");
+      const ragDetail = document.getElementById("rag-detail");
+      ragDetail.classList.remove("show");
+
+      if (data.rag_found) {
+        ragStatus.classList.add("show", "hit");
+        ragMsg.textContent = `Vector DB hit — similar past case found and used as context. (${data.rag_total} records in DB)`;
+        ragToggle.style.display = "inline";
+        ragToggle.textContent = "View context ▾";
+        ragDetail.textContent = data.rag_context;
+      } else {
+        ragStatus.classList.add("show", "miss");
+        ragMsg.textContent = `Vector DB — no prior cases yet. This entry is now saved. (${data.rag_total} record in DB)`;
+        ragToggle.style.display = "none";
+      }
+
+      // Show output
       const labels = { patient_summary: "Patient Summary", medical_report: "Medical Report" };
       document.getElementById("out-title").textContent = labels[docType];
       document.getElementById("out-meta").textContent = fields.name + " · " + data.timestamp;
       document.getElementById("out-body").innerHTML = renderMd(data.content);
       document.getElementById("output").classList.add("show");
-      document.getElementById("output").scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("rag-status").scrollIntoView({ behavior: "smooth", block: "nearest" });
 
     } catch {
       err.textContent = "Could not connect. Make sure Flask is running on port 5000.";
