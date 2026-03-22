@@ -35,6 +35,11 @@ User Input → Vector DB Retrieval → Prompt Engineering → Gemini LLM → Out
 - Visit: https://aistudio.google.com/app/apikey
 - Create a free API key
 
+### 1. API key setup
+- Create a .env file.
+- Write GEMINI_API_KEY="your_actual_api_key"
+- Write your own API key in this section without "".
+- 
 ### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
