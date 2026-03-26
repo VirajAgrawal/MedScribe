@@ -9,7 +9,7 @@ A specialized GenAI tool for healthcare professionals that transforms basic case
 | Layer | Tool |
 |-------|------|
 | Backend | Python + Flask |
-| LLM API | Google Gemini 1.5 Flash (Free Tier) |
+| LLM API | Google Gemini 2.5 Flash (Free Tier) |
 | Vector DB | ChromaDB (in-memory / persistent) |
 | Frontend | HTML + CSS + Vanilla JS |
 
@@ -24,7 +24,7 @@ User Input → Vector DB Retrieval → Prompt Engineering → Gemini LLM → Out
 1. **User Input**: Doctor enters a brief patient description or topic
 2. **Vector DB Retrieval (RAG)**: ChromaDB is queried for similar past documents — this provides context
 3. **Prompt Engineering**: A carefully crafted template injects the context + user input with clinical instructions for tone, format, and terminology
-4. **Gemini LLM**: The engineered prompt is sent to Gemini 1.5 Flash (free tier)
+4. **Gemini LLM**: The engineered prompt is sent to Gemini 2.5 Flash (free tier)
 5. **Output + Store**: The result is displayed and stored in ChromaDB for future retrieval
 
 ---
@@ -89,4 +89,4 @@ healthcare-genai/
 - **Prompt Engineering**: Role-based system prompts with format constraints and clinical terminology enforcement
 - **RAG (Retrieval-Augmented Generation)**: ChromaDB stores and retrieves similar past documents to enrich prompts
 - **Vector Embeddings**: Documents are embedded and stored for semantic similarity search
-- **LLM API Integration**: Gemini 1.5 Flash via Google's official Python SDK
+- **LLM API Integration**: Gemini 2.5 Flash via Google's official Python SDK
