@@ -212,6 +212,9 @@ def generate():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+from agent import agent_bp
+app.register_blueprint(agent_bp)
+
 if __name__ == "__main__":
     print("Running at http://localhost:5000")
     app.run(debug=True, port=5000)

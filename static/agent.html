@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedScribe — AI Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0f1117;
+      --surface:  #181c25;
+      --surface2: #1e2330;
+      --border:   #2a2f3d;
+      --accent:   #2d9b6f;
+      --accent-lt:#1a3d2e;
+      --text:     #e8eaf0;
+      --muted:    #7a8094;
+      --warn:     #e07b3a;
+      --blue:     #4a9eff;
+      --red:      #e05a5a;
+      --green:    #2d9b6f;
+      --purple:   #9b72e0;
+      --radius:   10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand { font-family: 'Lora', serif; font-size: 1.1rem; color: var(--text); }
+    .brand em { font-style: italic; color: var(--accent); }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--accent); background: var(--accent-lt); }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      height: calc(100vh - 56px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 1.2rem 1rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .example-goals { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .example-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.55rem 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .example-btn:hover { border-color: var(--accent); color: var(--text); background: var(--accent-lt); }
+
+    .sidebar-info {
+      padding: 1rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .info-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .info-block-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-block p {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .phase-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .phase-item {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .phase-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .phase-dot.research  { background: var(--blue); }
+    .phase-dot.specialist{ background: var(--purple); }
+    .phase-dot.diagnostic{ background: var(--warn); }
+    .phase-dot.insurance { background: #e0c03a; }
+    .phase-dot.treatment { background: var(--green); }
+    .phase-dot.followup  { background: var(--muted); }
+
+    /* ── Chat area ── */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── Message bubbles ── */
+    .msg { display: flex; flex-direction: column; gap: 4px; max-width: 820px; }
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.agent { align-self: flex-start; align-items: flex-start; }
+
+    .msg-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+
+    .bubble {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .msg.user .bubble {
+      background: var(--accent-lt);
+      border: 1px solid var(--accent);
+      color: var(--text);
+    }
+
+    .msg.agent .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── Progress stream ── */
+    .phase-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 600px;
+    }
+
+    .phase-card.active { border-color: var(--accent); color: var(--text); }
+    .phase-card.done   { border-color: var(--border); opacity: 0.7; }
+    .phase-card.error  { border-color: var(--red); color: var(--red); }
+
+    .phase-icon { font-size: 1rem; flex-shrink: 0; }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ── Result card (final schedule) ── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .result-header {
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .result-title {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .result-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    .result-summary {
+      padding: 0.8rem 1.1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    .steps-list { padding: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      padding: 0.65rem 0.7rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      transition: border-color 0.15s;
+    }
+
+    .step-row:hover { border-color: var(--accent); }
+    .step-row.blocked { border-color: var(--red); opacity: 0.85; }
+    .step-row.adapted { border-color: var(--warn); }
+
+    .step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-num.ok      { background: var(--accent); }
+    .step-num.blocked { background: var(--red); }
+    .step-num.adapted { background: var(--warn); }
+
+    .step-body { flex: 1; min-width: 0; }
+
+    .step-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .step-name {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .step-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .badge-research   { background: #1a2a3d; color: var(--blue); }
+    .badge-specialist { background: #2a1a3d; color: var(--purple); }
+    .badge-diagnostic { background: #3d2a1a; color: var(--warn); }
+    .badge-insurance  { background: #3d381a; color: #e0c03a; }
+    .badge-treatment  { background: var(--accent-lt); color: var(--accent); }
+    .badge-followup   { background: var(--surface2); color: var(--muted); }
+
+    .step-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.45; }
+    .step-resource {
+      font-size: 0.72rem;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .step-resource.ok     { color: var(--accent); }
+    .step-resource.blocked{ color: var(--red); }
+    .step-resource.adapted{ color: var(--warn); }
+
+    .step-timing {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .result-footer {
+      padding: 0.65rem 1.1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+    }
+
+    .stat { font-size: 0.75rem; color: var(--muted); }
+    .stat strong { color: var(--text); }
+    .stat.ok strong { color: var(--accent); }
+    .stat.warn strong { color: var(--warn); }
+
+    /* ── Input area ── */
+    .input-area {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-end;
+    }
+
+    .goal-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
+      transition: border-color 0.15s;
+      line-height: 1.5;
+    }
+
+    .goal-input:focus { border-color: var(--accent); }
+    .goal-input::placeholder { color: var(--muted); }
+
+    .send-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      width: 42px; height: 42px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+
+    .send-btn:hover { opacity: 0.85; }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn svg { width: 18px; height: 18px; fill: white; }
+
+    .input-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── Welcome state ── */
+    .welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      gap: 0.8rem;
+    }
+
+    .welcome-icon {
+      width: 56px; height: 56px;
+      background: var(--accent-lt);
+      border: 1px solid var(--accent);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .welcome h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .welcome p { font-size: 0.875rem; color: var(--muted); max-width: 420px; line-height: 1.6; }
+
+    /* ── Adaptation notice ── */
+    .adaptation-notice {
+      background: #2a1a0a;
+      border: 1px solid var(--warn);
+      border-radius: 7px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.77rem;
+      color: var(--warn);
+      margin: 0.4rem 0.6rem;
+      line-height: 1.45;
+    }
+
+    /* Scrollbar for sidebar */
+    .sidebar-info::-webkit-scrollbar { width: 3px; }
+    .sidebar-info::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="brand">Med<em>Scribe</em> AI</div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Document Generator</a>
+    <a href="/agent/" class="nav-link active">AI Agent</a>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Example Goals</div>
+      <div class="example-goals">
+        <button class="example-btn" onclick="setGoal(this)">Find treatment options for Type 2 Diabetes</button>
+        <button class="example-btn" onclick="setGoal(this)">Create a cardiac rehabilitation plan for a post-MI patient</button>
+        <button class="example-btn" onclick="setGoal(this)">Develop a cancer screening protocol for high-risk patients</button>
+        <button class="example-btn" onclick="setGoal(this)">Plan management for a patient with chronic kidney disease</button>
+        <button class="example-btn" onclick="setGoal(this)">Organise a complete diagnostic workup for unexplained weight loss</button>
+      </div>
+    </div>
+
+    <div class="sidebar-info">
+      <div class="info-block">
+        <div class="info-block-title">Agent Pipeline</div>
+        <p>1. Decompose goal into steps<br/>2. Validate each resource<br/>3. Build dependency schedule<br/>4. Replan blocked steps</p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block-title">Step Categories</div>
+        <ul class="phase-list">
+          <li class="phase-item"><span class="phase-dot research"></span> Research</li>
+          <li class="phase-item"><span class="phase-dot specialist"></span> Specialist</li>
+          <li class="phase-item"><span class="phase-dot diagnostic"></span> Diagnostic</li>
+          <li class="phase-item"><span class="phase-dot insurance"></span> Insurance</li>
+          <li class="phase-item"><span class="phase-dot treatment"></span> Treatment</li>
+          <li class="phase-item"><span class="phase-dot followup"></span> Follow-up</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block-title">Mock Tools</div>
+        <p>check_specialist<br/>check_equipment<br/>check_insurance<br/>get_patient_history<br/>estimate_duration</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">⚕</div>
+        <h2>Healthcare AI Agent</h2>
+        <p>Enter a broad healthcare goal. The agent will decompose it into steps, validate resources, build a dependency-aware schedule, and adapt to any unavailable resources.</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea class="goal-input" id="goal-input"
+          placeholder="Enter a healthcare goal, e.g. 'Find treatment options for hypertension'..."
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendGoal()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const messagesEl = document.getElementById('messages');
+  const inputEl    = document.getElementById('goal-input');
+  const sendBtn    = document.getElementById('send-btn');
+  let isRunning    = false;
+
+  function setGoal(btn) {
+    inputEl.value = btn.textContent.trim();
+    autoResize(inputEl);
+    inputEl.focus();
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendGoal();
+    }
+  }
+
+  function scrollBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function addUserMsg(text) {
+    const welcome = document.getElementById('welcome');
+    if (welcome) welcome.remove();
+
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = `
+      <div class="msg-label">You</div>
+      <div class="bubble">${escHtml(text)}</div>
+    `;
+    messagesEl.appendChild(div);
+    scrollBottom();
+  }
+
+  function addAgentBubble(text) {
+    const div = document.createElement('div');
+    div.className = 'msg agent';
+    div.innerHTML = `
+      <div class="msg-label">AI Agent</div>
+      <div class="bubble">${escHtml(text)}</div>
+    `;
+    messagesEl.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function addPhaseCard(id, icon, text, state = 'active') {
+    const div = document.createElement('div');
+    div.className = `msg agent`;
+    div.id = `phase-${id}`;
+    div.innerHTML = `
+      <div class="phase-card ${state}">
+        ${state === 'active' ? '<div class="pulse"></div>' : `<span class="phase-icon">${icon}</span>`}
+        <span>${escHtml(text)}</span>
+      </div>
+    `;
+    messagesEl.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function updatePhaseCard(id, icon, text, state) {
+    const el = document.getElementById(`phase-${id}`);
+    if (el) {
+      el.querySelector('.phase-card').className = `phase-card ${state}`;
+      el.querySelector('.phase-card').innerHTML = `
+        <span class="phase-icon">${icon}</span>
+        <span>${escHtml(text)}</span>
+      `;
+    }
+  }
+
+  function renderSchedule(schedule, replanning) {
+    const steps = schedule.scheduled_steps || [];
+    const blocked = schedule.blocked_count || 0;
+
+    // Build adaptation map
+    const adaptMap = {};
+    if (replanning) {
+      for (const ev of replanning) {
+        adaptMap[ev.blocked_step] = ev.adaptation;
+      }
+    }
+
+    const stepsHtml = steps.map(s => {
+      const statusClass = s.status === 'blocked' ? 'blocked' : s.status === 'adapted' ? 'adapted' : 'ok';
+      const numClass    = statusClass;
+      const resClass    = s.resource_ok ? 'ok' : s.status === 'adapted' ? 'adapted' : 'blocked';
+      const resIcon     = s.resource_ok ? '✓' : s.status === 'adapted' ? '⚡' : '✗';
+      const badge       = `<span class="step-badge badge-${s.category || 'followup'}">${s.category || 'task'}</span>`;
+      const depText     = s.depends_on && s.depends_on.length
+        ? `· Depends on step${s.depends_on.length > 1 ? 's' : ''} ${s.depends_on.join(', ')}`
+        : '';
+      const adapt = adaptMap[s.title] ? `<div class="step-resource adapted">⚡ Adapted: ${escHtml(adaptMap[s.title])}</div>` : '';
+
+      return `
+        <div class="step-row ${statusClass}">
+          <div class="step-num ${numClass}">${s.id}</div>
+          <div class="step-body">
+            <div class="step-title-row">
+              <span class="step-name">${escHtml(s.title)}</span>
+              ${badge}
+            </div>
+            <div class="step-desc">${escHtml(s.description)}</div>
+            <div class="step-resource ${resClass}">${resIcon} ${escHtml(s.resource_info)}</div>
+            ${adapt}
+            <div class="step-timing">Day ${s.start_day}–${s.end_day} · ${escHtml(s.estimated_time || '')} · Priority: ${escHtml(s.priority || '')} ${depText}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const adaptNotices = replanning && replanning.length
+      ? replanning.map(ev =>
+          `<div class="adaptation-notice">⚡ <strong>${escHtml(ev.blocked_step)}</strong> was blocked — ${escHtml(ev.adaptation)}</div>`
+        ).join('')
+      : '';
+
+    const card = document.createElement('div');
+    card.className = 'msg agent';
+    card.innerHTML = `
+      <div class="msg-label">AI Agent — Final Schedule</div>
+      <div class="result-card">
+        <div class="result-header">
+          <div>
+            <div class="result-title">Execution Plan</div>
+            <div class="result-meta">${escHtml(schedule.goal || '')}</div>
+          </div>
+        </div>
+        <div class="result-summary">${escHtml(schedule.summary || '')}</div>
+        ${adaptNotices}
+        <div class="steps-list">${stepsHtml}</div>
+        <div class="result-footer">
+          <div class="stat ok"><strong>${steps.length}</strong> steps</div>
+          <div class="stat ok"><strong>${schedule.total_days}</strong> days total</div>
+          <div class="stat ${blocked ? 'warn' : 'ok'}"><strong>${blocked}</strong> blocked</div>
+          <div class="stat"><strong>${replanning ? replanning.length : 0}</strong> replanned</div>
+        </div>
+      </div>
+    `;
+    messagesEl.appendChild(card);
+    scrollBottom();
+  }
+
+  async function sendGoal() {
+    const goal = inputEl.value.trim();
+    if (!goal || isRunning) return;
+
+    isRunning = true;
+    sendBtn.disabled = true;
+    inputEl.value = '';
+    autoResize(inputEl);
+
+    addUserMsg(goal);
+
+    // Use streaming SSE endpoint for live progress
+    let phaseCounter = 0;
+    let finalSchedule = null;
+    let replanning = [];
+    let decomposeCardId = null;
+    let validateCardId  = null;
+    let scheduleCardId  = null;
+    let replanCardId    = null;
+
+    const url = `/agent/stream?goal=${encodeURIComponent(goal)}`;
+    const evtSource = new EventSource(url);
+
+    evtSource.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      const { phase, message, payload } = msg;
+
+      if (phase === 'start') {
+        addAgentBubble(message);
+
+      } else if (phase === 'decomposing') {
+        decomposeCardId = 'decompose-' + (++phaseCounter);
+        addPhaseCard(decomposeCardId, '🧠', message, 'active');
+
+      } else if (phase === 'decomposed') {
+        updatePhaseCard(decomposeCardId, '✅', `Identified ${payload.steps.length} steps: ${payload.steps.map(s=>s.title).join(' → ')}`, 'done');
+
+      } else if (phase === 'validating') {
+        validateCardId = 'validate-' + (++phaseCounter);
+        addPhaseCard(validateCardId, '🔍', message, 'active');
+
+      } else if (phase === 'resource_check') {
+        const icon = payload.available ? '✅' : '❌';
+        const id = 'res-' + (++phaseCounter);
+        addPhaseCard(id, icon, `${icon} Step ${payload.step_id}: ${message.split('—')[1]?.trim() || message}`, 'done');
+
+      } else if (phase === 'scheduling') {
+        if (validateCardId) updatePhaseCard(validateCardId, '🔍', 'Resource validation complete.', 'done');
+        scheduleCardId = 'schedule-' + (++phaseCounter);
+        addPhaseCard(scheduleCardId, '📅', message, 'active');
+
+      } else if (phase === 'scheduled') {
+        finalSchedule = payload.schedule;
+        updatePhaseCard(scheduleCardId, '📅', `Schedule built: ${payload.schedule.total_days} days, ${payload.schedule.steps_count} steps`, 'done');
+
+      } else if (phase === 'replanning') {
+        replanCardId = 'replan-' + (++phaseCounter);
+        addPhaseCard(replanCardId, '⚡', message, 'active');
+
+      } else if (phase === 'replanned') {
+        const id = 'rp-' + (++phaseCounter);
+        addPhaseCard(id, '⚡', `Adapted: ${payload.blocked} — ${payload.adaptation}`, 'done');
+        replanning.push(payload);
+
+      } else if (phase === 'complete') {
+        if (replanCardId) updatePhaseCard(replanCardId, '⚡', 'Replanning complete.', 'done');
+        const sched = payload.final_schedule || finalSchedule;
+        if (sched) renderSchedule(sched, replanning);
+        evtSource.close();
+        isRunning = false;
+        sendBtn.disabled = false;
+
+      } else if (phase === 'error') {
+        addAgentBubble(`Error: ${message}`);
+        evtSource.close();
+        isRunning = false;
+        sendBtn.disabled = false;
+      }
+    };
+
+    evtSource.onerror = () => {
+      addAgentBubble('Connection error. Make sure the Flask server is running on port 5000.');
+      evtSource.close();
+      isRunning = false;
+      sendBtn.disabled = false;
+    };
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
