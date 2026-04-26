@@ -4,7 +4,7 @@ agent/planner.py
 Goal Decomposition & Schedule Generation using LangChain.
 
 LangChain components used here:
-  - ChatGoogleGenerativeAI  : LangChain LLM wrapper for Gemini
+  - ChatGroq  : LangChain LLM wrapper for Groq
   - PromptTemplate          : Structured prompt with declared input variables
   - LLMChain                : Links PromptTemplate + LLM declaratively
 
@@ -17,20 +17,19 @@ import json
 import re
 import os
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from langchain_groq import ChatGroq
 
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+Groq_API_KEY = os.environ.get("Groq_API_KEY", "YOUR_Groq_API_KEY_HERE")
 
 # ── LangChain LLM ──────────────────────────────────────────────────────────────
-# ChatGoogleGenerativeAI is LangChain's wrapper for Gemini.
+# ChatGroq is LangChain's wrapper for Groq.
 # This is completely separate from app.py's genai.GenerativeModel() setup.
-planner_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    google_api_key=GEMINI_API_KEY,
+planner_llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    groq_api_key=Groq_API_KEY,
     temperature=0.2,
-    convert_system_message_to_human=True
 )
 
 # ── LangChain PromptTemplate — Goal Decomposition ─────────────────────────────
@@ -108,7 +107,7 @@ def _parse_json(text: str) -> dict:
 def decompose_goal(goal: str) -> dict:
     """
     Phase 1 — Goal Decomposition via LangChain LLMChain.
-    decompose_chain.invoke() fills the PromptTemplate and calls Gemini.
+    decompose_chain.invoke() fills the PromptTemplate and calls Groq.
     """
     result = decompose_chain.invoke({"goal": goal})
     raw    = result.content if hasattr(result, "content") else str(result)
@@ -172,7 +171,7 @@ def build_schedule(plan: dict, resource_results: list) -> dict:
 def replan_blocked_step(failed_step: dict, resource_result, remaining_steps: list) -> dict:
     """
     Phase 4 — Dynamic Replanning via LangChain LLMChain.
-    replan_chain.invoke() fills the PromptTemplate and calls Gemini.
+    replan_chain.invoke() fills the PromptTemplate and calls Groq.
     """
     result = replan_chain.invoke({
         "failed_step":     json.dumps(failed_step, indent=2),

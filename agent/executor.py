@@ -6,7 +6,7 @@ Agent Execution Orchestrator — powered by LangChain AgentExecutor.
 LangChain components used:
   - AgentExecutor          — runs the ReAct think -> tool -> observe loop
   - create_react_agent     — builds ReAct agent from llm + tools + prompt
-  - ChatGoogleGenerativeAI — LangChain LLM for agent reasoning
+  - ChatGroq — LangChain LLM for agent reasoning
 
 app.py is NOT touched — it continues using raw google.generativeai directly.
 Only the agent module uses LangChain.
@@ -18,21 +18,19 @@ import os
 # ── LangChain imports ───────────
 from langchain_classic.agents import AgentExecutor, create_react_agent
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-
+from langchain_groq import ChatGroq
 from .planner import decompose_goal, build_schedule, replan_blocked_step
 from .tools   import LANGCHAIN_TOOLS
 
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+Groq_API_KEY = os.environ.get("Groq_API_KEY", "YOUR_Groq_API_KEY_HERE")
 
 # ── LangChain LLM for the Agent ────────────────────────────────────────────────
-agent_llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=GEMINI_API_KEY,
-    temperature=0.1,
-    convert_system_message_to_human=True
+agent_llm = ChatGroq(
+    model="llama-3.3-70b-versatile",  # LLaMA 3 70B is highly recommended for ReAct agents
+    api_key=Groq_API_KEY,
+    temperature=0.1
 )
 
 # ── LangChain ReAct Prompt ─────────────────────────────────────────────────────
