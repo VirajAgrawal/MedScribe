@@ -29,12 +29,34 @@ genai.configure(api_key=GEMINI_API_KEY)
 # ── ChromaDB with simple embedding function ──
 # We use a custom embedding function based on a hash-of-words approach
 # that works without any extra ML dependencies (onnxruntime etc.)
+# class SimpleEmbedder:
+#     """
+#     Lightweight deterministic embedder using character n-gram hashing.
+#     Converts text → a fixed 64-dim float vector for similarity search.
+#     No external ML packages needed beyond chromadb itself.
+#     """
+#     def __call__(self, input):
+#         results = []
+#         for text in input:
+#             vec = [0.0] * 64
+#             text = text.lower()
+#             for i in range(len(text) - 2):
+#                 trigram = text[i:i+3]
+#                 h = hash(trigram) % 64
+#                 vec[h] += 1.0
+#             # Normalize
+#             total = sum(vec) or 1.0
+#             vec = [v / total for v in vec]
+#             results.append(vec)
+#         return results
+
 class SimpleEmbedder:
     """
     Lightweight deterministic embedder using character n-gram hashing.
     Converts text → a fixed 64-dim float vector for similarity search.
     No external ML packages needed beyond chromadb itself.
     """
+
     def __call__(self, input):
         results = []
         for text in input:
@@ -44,11 +66,15 @@ class SimpleEmbedder:
                 trigram = text[i:i+3]
                 h = hash(trigram) % 64
                 vec[h] += 1.0
-            # Normalize
+
             total = sum(vec) or 1.0
             vec = [v / total for v in vec]
             results.append(vec)
+
         return results
+
+    def name(self):
+        return "simple-embedder"
 
 chroma_client = chromadb.Client()
 collection = chroma_client.get_or_create_collection(
@@ -217,4 +243,5 @@ app.register_blueprint(agent_bp)
 
 if __name__ == "__main__":
     print("Running at http://localhost:5000")
-    app.run(debug=True, port=5000)
+    # app.run(debug=True, port=5000)
+    app.run(debug=True,host="0.0.0.0", port=5000)
