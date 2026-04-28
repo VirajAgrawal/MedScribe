@@ -15,7 +15,7 @@ A specialized Agentic-GenAI tool for healthcare professionals that transforms ba
 | Vector DB | ChromaDB (in-memory / persistent) |
 | Frontend | HTML + CSS + Vanilla JS |
 
----
+--- 
 
 ## How It Works (Pipeline)
 
